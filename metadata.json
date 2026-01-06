@@ -1,0 +1,8 @@
+{
+  "name": "Parlamento Familiar Oficial",
+  "description": "Sistema Digital de Gestión Parlamentaria Soberana",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
