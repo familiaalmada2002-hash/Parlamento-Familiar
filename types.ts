@@ -14,18 +14,9 @@ export type VoteType = 'YES' | 'NO' | 'ABSTAIN' | null;
 export interface Sentencia {
   id: string;
   fecha: string;
-  veredicto: 'INOCENTE' | 'EXPULSION_TEMPORAL' | 'EXPULSION_PERMANENTE' | 'APERCIBIMIENTO';
+  veredicto: 'INOCENTE' | 'EXPULSION_5_DIAS' | 'SIN_VOTO_UNA_VEZ' | 'SIN_PALABRA_UNA_VEZ' | 'EXPULSION_DIRECTA';
   detalle: string;
   juez: string;
-}
-
-export interface Sancion {
-  id: string;
-  tipo: string;
-  motivo: string;
-  consecuencia: string;
-  fecha: string;
-  autoridad: string;
 }
 
 export interface User {
@@ -38,8 +29,9 @@ export interface User {
   presente: boolean;
   habilitado: boolean;
   votoActual: VoteType;
-  pedirPalabra: 'NINGUNO' | 'ESPERA' | 'CONCEDIDA' | 'ESPERAR';
-  sanciones: Sancion[];
+  pedirPalabra: 'NINGUNO' | 'ESPERA' | 'CONCEDIDA' | 'RECHAZADA' | 'ESPERE_MINUTOS';
+  notificacionVista: boolean; // Para que el flash solo aparezca una vez
+  sanciones: number;
   sentencias: Sentencia[];
   clave: string;
   votoDobleEjercido: boolean;
@@ -52,15 +44,23 @@ export interface Proyecto {
   articulado: string;
   autor: string;
   autorId: string;
-  estado: 'MESA' | 'ORDEN_DIA' | 'EN_TRATAMIENTO' | 'APROBADO' | 'RECHAZADO' | 'ARCHIVADO' | 'SANCIONADO_IMPLEMENTADO';
+  autorDni: string;
+  autorBanca: number;
   fecha: string;
-  tipo: 'LEY' | 'MOCION' | 'DECRETO' | 'HOMENAJE' | 'RESOLUCION' | 'NOTICIA';
-  bancaOrigen: number;
-  comisionId?: string;
-  resultado?: 'APROBADO' | 'RECHAZADO' | 'ARCHIVADO';
-  votosSi?: number;
-  votosNo?: number;
-  votosAbs?: number;
+  hora: string;
+  estado: 'MESA' | 'ORDEN_DIA' | 'EN_TRATAMIENTO' | 'APROBADO' | 'RECHAZADO' | 'ARCHIVADO' | 'IMPLEMENTADO';
+  tipo: 'LEY' | 'MOCION' | 'RESOLUCION' | 'NOTICIA';
+  sellado: boolean;
+  visado: boolean;
+}
+
+export interface Acta {
+  id: string;
+  titulo: string;
+  contenido: string;
+  fecha: string;
+  hora: string;
+  autor: string;
 }
 
 export interface Comision {
@@ -73,28 +73,29 @@ export interface Comision {
 }
 
 export type ProjectionMode = 
-  | 'LOGO' | 'APERTURA' | 'VELA' | 'INVESTIDURA' | 'HIMNO_NAC' | 'HIMNO_MIS' 
-  | 'HIMNO_PE' | 'DEBATE' | 'VOTACION_CURSO' | 'VOTACION_RESULTADO' | 'SANCION' | 'JUICIO' | 'CIERRE' | 'CUARTO_INTERMEDIO';
+  | 'LOGO' | 'APERTURA_INST' | 'VELA_INICIO' | 'INVESTIDURA' | 'HIMNO_NAC' | 'HIMNO_MIS' 
+  | 'HIMNO_PE' | 'HOMENAJES_INI' | 'ORDEN_DIA_PROY' | 'USO_PALABRA' | 'MOCIONES_PROY' | 'DEBATE_PROY'
+  | 'VOTACION_PREP' | 'VOTACION_CURSO' | 'VOTACION_RESULTADO' | 'VOTO_PRESIDENCIAL' | 'SANCION_PROY' | 'JUICIO_INICIADO'
+  | 'CUARTO_INTERMEDIO' | 'HOMENAJES_FIN' | 'AVISOS_INST' | 'CIERRE_SESION' | 'REGISTRO_FINAL'
+  | 'SILENCIO' | 'RECONOCIMIENTO' | 'NOMBRAMIENTO' | 'DECLARACION' | 'ESTATUTO_MOD';
 
 export interface AppState {
   users: User[];
   projects: Proyecto[];
   news: Proyecto[];
   ordenDia: Proyecto[];
-  archivosHistoricos: Proyecto[];
-  archivosGeneral: Proyecto[];
+  actas: Acta[];
   comisiones: Comision[];
-  sessionStatus: 'CERRADA' | 'ABIERTA' | 'CUARTO_INTERMEDIO' | 'PAUSA';
+  sessionStatus: 'CERRADA' | 'ABIERTA' | 'CUARTO_INTERMEDIO' | 'PAUSA' | 'NO_INICIADA';
   sessionType: 'ORDINARIA' | 'EXTRAORDINARIA' | 'ESPECIAL' | 'SOLEMNE' | 'DISCIPLINARIA';
   sessionNumber: string;
   candleLit: boolean;
-  investitureDone: boolean;
+  hatOn: boolean;
   speakerId: string | null;
   speakerTimer: number;
   activeVoteTopic: string | null;
-  activeVoteRefId: string | null;
   manualVotes: { yes: number, no: number, abs: number };
   projectionMode: ProjectionMode;
-  lastSanctionedUserId?: string;
   currentTime: Date;
+  flashMessage: string | null;
 }
